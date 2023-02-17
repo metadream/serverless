@@ -6,7 +6,7 @@
 。该脚本对外提供服务时，GET 请求（通常指浏览器访问）返回 HTML 页面，POST 请求返回 JSON 格式数据。（另外：可以使用另一款 Google Drive
 Connector 公共服务：https://unpkg.net ，无需开发代码、一键连接谷歌云盘。）
 
-*使用方法*
+#### 使用方法
 
 1. 打开 `google-drive.js` 文件；
 2. 修改头部 `config` 对象中的 API 授权信息，该信息可通过 rclone 工具获取；
