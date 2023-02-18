@@ -28,7 +28,7 @@ const tpl = `
 <body>
   <h3><a href="/"><svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="30" height="30"><path d="M366 160l-9 15-256 416-10 16 9 17 128 224 9 16h550l9-16 128-224 9-17-10-16-256-416-9-15zm75 64h181l217 352H658zm-57 29l95 155-222 361-92-161zm133 216l66 107H451zM412 640h429l-92 160H313z" fill="#00c250"/></svg>Google Drive</a></h3>
   <main>{{content}}</main>
-  <footer>Developed by <a target="_blank" href="https://github.com/seatwork/cloudflare-workers">Seatwork on Github</a></footer>
+  <footer>Developed by <a target="_blank" href="https://github.com/metadream/serverless">Metadream on Github</a></footer>
 </body>
 </html>`
 
