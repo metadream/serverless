@@ -1,3 +1,5 @@
 # Serverless
 
-Serverless functions based on [cloudflare workers](https://workers.cloudflare.com/) and [deno playground](https://deno.com/deploy).
+Serverless functions based on
+[Cloudflare Workers](https://workers.cloudflare.com/) and
+[Deno Playground](https://deno.com/deploy).
