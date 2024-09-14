@@ -1,7 +1,7 @@
 const upstreams = {
-    "/google/": "https://www.googleapis.com",
-    "/github/": "https://api.github.com",
-    "/nominatim/": "https://nominatim.openstreetmap.org"
+  "/google/": "https://www.googleapis.com",
+  "/github/": "https://api.github.com",
+  "/osm/": "https://nominatim.openstreetmap.org"
 }
 
 export default {

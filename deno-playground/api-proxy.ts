@@ -1,7 +1,7 @@
 const upstreams = {
   "/google/": "https://www.googleapis.com",
   "/github/": "https://api.github.com",
-  "/nominatim/": "https://nominatim.openstreetmap.org"
+  "/osm/": "https://nominatim.openstreetmap.org"
 }
 
 Deno.serve(async (request: Request) => {
