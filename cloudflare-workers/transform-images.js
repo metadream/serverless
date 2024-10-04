@@ -3,7 +3,7 @@
  * Transform Images in R2 with Workers
  */
 export default {
-    r2_hostname: "pub-c5cb3e03a15d442885a8cca7767278d5.r2.dev",
+    r2_hostname: "pub-xxxxxxxxxxxxxxxxxxxxxxxxxxx.r2.dev",
 
     async fetch(request) {
         const url = new URL(request.url)
