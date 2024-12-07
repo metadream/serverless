@@ -3,34 +3,72 @@
  * Transform Images in R2 with Workers
  */
 export default {
-    r2_hostname: "pub-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.r2.dev",
 
-    async fetch(request) {
-        const url = new URL(request.url)
-        url.hostname = this.r2_hostname
-
-        if (url.pathname === "/") {
-            return new Response("(c) 2024 Object storage service based on Cloudflare R2")
-        }
-        // No image or no querystring returns the raw content
-        const params = url.searchParams;
-        if (!/\.(jpe?g|png|gif|webp)$/i.test(url.pathname) || !params.toString()) {
-            return fetch(new Request(url.href, { headers: request.headers }))
+    async fetch(request, env) {
+        const { origin, pathname, searchParams } = new URL(request.url);
+        if (pathname === "/") {
+            return new Response("(c) 2024 Object Storage Service based on Cloudflare R2");
         }
 
-        // Transform images options
-        const image = { fit: "scale-down" }
-        if (params.has("size")) {
-            image.width = image.height = params.get("size")
+        // Get bucket
+        const { bucketName, objectKey } = this.parse(pathname);
+        const bucket = env[bucketName];
+        if (!bucket) {
+            return new Response("Bucket Not Found", { status: 404 });
         }
-        if (params.has("width")) image.width = params.get("width")
-        if (params.has("height")) image.height = params.get("height")
-        if (params.has("quality")) image.quality = params.get("quality")
-        if (params.has("fit")) image.fit = params.get("fit")
 
-        const imageUrl = url.origin + url.pathname
-        const options = { cf: { image } }
-        return fetch(new Request(imageUrl, { headers: request.headers }), options)
+        // Get object
+        const object = await bucket.get(objectKey);
+        if (!object) {
+            return new Response("Object Not Found", { status: 404 });
+        }
+
+        // If not image or has no querystring, return the raw content
+        const { contentType } = object.httpMetadata;
+        if (!contentType.startsWith("image/") || !searchParams.toString()) {
+            // HTTP caching
+            const etag = this.extractEtag(request);
+            if (etag == object.httpEtag) {
+                return new Response(null, { status: 304 });
+            }
+            // Raw content
+            const headers = new Headers();
+            object.writeHttpMetadata(headers);
+            headers.set("Access-Control-Allow-Origin", "*");
+            headers.set("Access-Control-Allow-Headers", "*");
+            headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
+            headers.set("etag", object.httpEtag);
+            return new Response(object.body, { headers });
+        }
+
+        // If image, transform with query parameters
+        const image = { fit: "scale-down" };
+        if (searchParams.has("size")) {
+            image.width = image.height = searchParams.get("size");
+        }
+        if (searchParams.has("width")) image.width = searchParams.get("width");
+        if (searchParams.has("height")) image.height = searchParams.get("height");
+        if (searchParams.has("quality")) image.quality = searchParams.get("quality");
+        if (searchParams.has("fit")) image.fit = searchParams.get("fit");
+
+        return fetch(new Request(origin + pathname,
+            { headers: request.headers }),  { cf: { image } });
+    },
+
+    parse(pathname) {
+        const parts = pathname.slice(1).split("/");
+        return {
+            bucketName: parts.shift(),
+            objectKey: decodeURI(parts.join("/"))
+        };
+    },
+
+    extractEtag(request) {
+        const etag = request.headers.get("If-None-Match");
+        if (etag) {
+            const matched = etag.match(/W\/("\w+")/);
+            return matched ? matched[1] : etag;
+        }
+        return null;
     }
-
 }
